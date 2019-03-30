@@ -87,7 +87,8 @@
                                     <option value="5">5</option>
                                 </select>
 
-                                <label class="my-1 mr-2" for="q5">How much do you like spicy food? (5 being love it)</label>
+                                <label class="my-1 mr-2" for="q5">How much do you like spicy food? (5 being love
+                                    it)</label>
                                 <select class="custom-select my-1 mr-sm-2" id="q5">
                                     <option selected>Choose...</option>
                                     <option value="1">1</option>
@@ -127,7 +128,8 @@
                                     <option value="5">5</option>
                                 </select>
 
-                                <label class="my-1 mr-2" for="q9">How outgoing are you? (5 being the most outgoing)</label>
+                                <label class="my-1 mr-2" for="q9">How outgoing are you? (5 being the most
+                                    outgoing)</label>
                                 <select class="custom-select my-1 mr-sm-2" id="q9">
                                     <option selected>Choose...</option>
                                     <option value="1">1</option>
@@ -137,7 +139,8 @@
                                     <option value="5">5</option>
                                 </select>
 
-                                <label class="my-1 mr-2" for="q10">Do you enjot being around other people? (5 being love it)</label>
+                                <label class="my-1 mr-2" for="q10">Do you enjot being around other people? (5 being love
+                                    it)</label>
                                 <select class="custom-select my-1 mr-sm-2" id="q10">
                                     <option selected>Choose...</option>
                                     <option value="1">1</option>
@@ -147,12 +150,36 @@
                                     <option value="5">5</option>
 
                                 </select>
-                                <button type="submit" class="btn btn-primary submit">Submit</button>
+                                <button type="submit" class="btn btn-primary submit" data-toggle="modal" data-target="#exampleModal">Submit</button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Your new friend</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
 
 
         <footer class="footer">
@@ -180,39 +207,35 @@
         event.preventDefault();
 
         // Here we grab the form elements
-        var newReservation = {
-            customerName: $("#reserve-name").val().trim(),
-            phoneNumber: $("#reserve-phone").val().trim(),
-            customerEmail: $("#reserve-email").val().trim(),
-            customerID: $("#reserve-unique-id").val().trim()
+        var total = 0;
+        for (var i = 1; i < 11; i++) {
+            var qi = "#q" + i;
+            total += Number($(qi).val());
+        }
+        var newPerson = {
+            name: $("#name").val().trim(),
+            photo: $("#imgLink").val().trim(),
+            scores: [$("#q1").val(), $("#q2").val(), $("#q3").val(), $("#q4").val(), $("#q5").val(), $("#q6").val(), $("#q7").val(), $("#q8").val(), $("#q9").val(), $("#q10").val(), Number(total)]
         };
 
-        console.log(newReservation);
+        console.log(newPerson, total);
 
         // This line is the magic. It"s very similar to the standard ajax function we used.
         // Essentially we give it a URL, we give it the object we want to send, then we have a "callback".
         // The callback is the response of the server. In our case, we set up code in api-routes that "returns" true or false
         // depending on if a tables is available or not.
 
-        $.post("/api/tables", newReservation,
+        $.post("/api/friends", newPerson,
             function (data) {
 
-                // If a table is available... tell user they are booked.
-                if (data) {
-                    alert("Yay! You are officially booked!");
-                }
+                console.log(data);
+                var name = data.name;
+                var pic = data.photo;
 
-                // If a table is available... tell user they on the waiting list.
-                else {
-                    alert("Sorry you are on the wait list");
-                }
 
-                // Clear the form when submitting
-                $("#reserve-name").val("");
-                $("#reserve-phone").val("");
-                $("#reserve-email").val("");
-                $("#reserve-unique-id").val("");
-
+                var $img = $("<img src='" + pic + "' >");
+                $(".modal-body").append("<p>" + name + "</p>");
+                $(".modal-body").append($img);
             });
 
     });
